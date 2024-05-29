@@ -1,3 +1,30 @@
+## apriltag_detector (humble) - 2.1.0-3
+
+The packages in the `apriltag_detector` repository were released into the `humble` distro by running `/home/z572/gits/revyos-ros/venv/bin/bloom-release -r humble apriltag_detector` on `Wed, 29 May 2024 05:28:20 -0000`
+
+These packages were released:
+- `apriltag_detector`
+- `apriltag_detector_mit`
+- `apriltag_detector_umich`
+- `apriltag_draw`
+
+Version of package(s) in repository `apriltag_detector`:
+
+- upstream repository: https://github.com/ros-misc-utilities/apriltag_detector.git
+- release repository: https://github.com/revyos-ros/apriltag_detector-release.git
+- rosdistro version: `2.1.0-2`
+- old version: `2.1.0-2`
+- new version: `2.1.0-3`
+
+Versions of tools used:
+
+- bloom version: `0.12.0`
+- catkin_pkg version: `1.0.0`
+- rosdep version: `0.22.2`
+- rosdistro version: `0.9.0`
+- vcstools version: `0.1.42`
+
+
 ## apriltag_detector (humble) - 2.1.0-2
 
 The packages in the `apriltag_detector` repository were released into the `humble` distro by running `/home/z572/gits/revyos-ros/venv/bin/bloom-release -r humble apriltag_detector` on `Tue, 28 May 2024 08:49:17 -0000`
