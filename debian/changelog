@@ -1,8 +1,0 @@
-ros-humble-apriltag-detector (2.1.0-3bookworm) bookworm; urgency=high
-
-  * switched to plugins, added MIT detector, split off apriltag_draw
-  * Contributors: Bernd Pfrommer
-
- -- Bernd Pfrommer <bernd.pfrommer@gmail.com>  Fri, 10 May 2024 16:00:00 -0000
-
-
