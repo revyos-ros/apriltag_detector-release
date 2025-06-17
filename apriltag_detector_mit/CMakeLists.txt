@@ -1,5 +1,5 @@
 #
-# Copyright 2022 Bernd Pfrommer <bernd.pfrommer@gmail.com>
+# Copyright 2024 Bernd Pfrommer <bernd.pfrommer@gmail.com>
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -21,101 +21,49 @@ add_compile_options(-Wall -Wextra -Wpedantic -Werror)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
-find_package(apriltag_mit)
-
-find_package(OpenCV REQUIRED COMPONENTS core imgproc)
+find_package(apriltag_detector REQUIRED)
+find_package(apriltag_mit REQUIRED)
+find_package(apriltag_msgs REQUIRED)
+find_package(cv_bridge REQUIRED)
+find_package(image_transport REQUIRED)
+find_package(pluginlib REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 set(ament_dependencies
-  "apriltag_detector"
-  "apriltag_msgs"
-  "cv_bridge"
-  "image_transport"
-  "pluginlib"
-  "rclcpp"
-  "rclcpp_components"
-  "sensor_msgs")
+  apriltag_detector::apriltag_detector
+  ${apriltag_msgs_TARGETS}
+  cv_bridge::cv_bridge
+  image_transport::image_transport
+  pluginlib::pluginlib
+  rclcpp::rclcpp
+  rclcpp_components::component
+  ${sensor_msgs_TARGETS})
 
-foreach(pkg ${ament_dependencies})
-  find_package(${pkg} REQUIRED)
-endforeach()
-
-if(${cv_bridge_VERSION} GREATER "3.3.0")
-  add_definitions(-DUSE_CV_BRIDGE_HPP)
-endif()
-
+#
+# --------- plugin library (exported)
+#
 pluginlib_export_plugin_description_file(apriltag_detector plugins.xml)
 
+add_library(${PROJECT_NAME} SHARED src/detector.cpp)
 
-#
-# --------- plugin library with node-free detector (exported)
-#
-add_library(${PROJECT_NAME} SHARED
-  src/detector.cpp)
-
-ament_target_dependencies(${PROJECT_NAME} ${ament_dependencies})
-target_link_libraries(${PROJECT_NAME} apriltag_mit::apriltag_mit)
+target_link_libraries(${PROJECT_NAME} ${ament_dependencies} apriltag_mit::apriltag_mit)
 
 target_include_directories(
-  ${PROJECT_NAME}
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
+  ${PROJECT_NAME} PUBLIC $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
 ament_export_targets(${PROJECT_NAME}_export HAS_LIBRARY_TARGET)
 ament_export_libraries(${PROJECT_NAME})
 
-#
-# --------- composable node library (exported)
-#
-add_library(${PROJECT_NAME}_component SHARED
-  src/component.cpp)
-
-ament_target_dependencies(${PROJECT_NAME}_component ${ament_dependencies})
-target_link_libraries(${PROJECT_NAME}_component ${PROJECT_NAME})
-
-target_include_directories(
-  ${PROJECT_NAME}_component
-  PUBLIC
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<INSTALL_INTERFACE:include>)
-
-ament_export_libraries(${PROJECT_NAME}_component)
-
-rclcpp_components_register_nodes(${PROJECT_NAME}_component "${PROJECT_NAME}::Component")
-
-#
-# -------- node
-#
-add_executable(${PROJECT_NAME}_node src/node.cpp)
-target_link_libraries(${PROJECT_NAME}_node ${PROJECT_NAME}_component)
-
-# the node must go into the paroject specific lib directory or else
-# the launch file will not find it
-
-install(TARGETS
-  ${PROJECT_NAME}_node
-  DESTINATION lib/${PROJECT_NAME}/)
-
-# the shared library goes into the global lib dir so it can
-# be used as a composable node by other projects
+# the shared library goes into the global lib dir so it can be used as a
+# composable node by other projects
 
 install(
-  TARGETS ${PROJECT_NAME} ${PROJECT_NAME}_component
+  TARGETS ${PROJECT_NAME}
   EXPORT ${PROJECT_NAME}_export
-  DESTINATION lib
-)
-
-install(
-  DIRECTORY include/
-  DESTINATION include
-  FILES_MATCHING
-  PATTERN "apriltag_detector.hpp"
-)
-
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
-  FILES_MATCHING PATTERN "*.py")
+  DESTINATION lib)
 
 if(BUILD_TESTING)
   find_package(ament_cmake REQUIRED)
