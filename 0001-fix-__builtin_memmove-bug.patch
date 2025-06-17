@@ -1,4 +1,4 @@
-From f67b2d1f4407673acb5db50b638381148fefd3de Mon Sep 17 00:00:00 2001
+From 5e004f233b1cf6f5f40245b789d5f4873a4ca034 Mon Sep 17 00:00:00 2001
 From: Zheng Junjie <zhengjunjie@iscas.ac.cn>
 Date: Mon, 11 Nov 2024 10:20:00 +0800
 Subject: [PATCH] fix __builtin_memmove bug.
